@@ -5,13 +5,13 @@ export function IdeaInput({ onSubmit, busy }: { onSubmit: (idea: string) => void
   const [idea, setIdea] = useState('')
   return (
     <form
-      className="card"
+      className="idea-form card"
       onSubmit={(e) => {
         e.preventDefault()
         if (idea.trim()) onSubmit(idea.trim())
       }}
     >
-      <label htmlFor="idea">Describe your startup idea</label>
+      <div className="form-heading"><div><label htmlFor="idea">What are you building?</label><p>Start with a plain-language description. We’ll identify the core problem, mechanism, and user.</p></div><span className="form-step">01 / 01</span></div>
       <textarea
         id="idea"
         rows={5}
@@ -19,9 +19,7 @@ export function IdeaInput({ onSubmit, busy }: { onSubmit: (idea: string) => void
         onChange={(e) => setIdea(e.target.value)}
         placeholder="e.g. A smart ring that estimates blood glucose from light sensors and alerts diabetics before a low."
       />
-      <button type="submit" disabled={busy || !idea.trim()}>
-        {busy ? 'Reading your idea…' : 'Check for similar patents'}
-      </button>
+      <div className="form-footer"><span className="field-hint">Be specific about what makes your idea different.</span><button type="submit" disabled={busy || !idea.trim()}>{busy ? 'Reading your idea…' : <>Start discovery <span>↗</span></>}</button></div>
     </form>
   )
 }

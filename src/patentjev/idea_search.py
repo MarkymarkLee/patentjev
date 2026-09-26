@@ -30,6 +30,7 @@ def search_competing_patents(
     max_iterations: int = DEFAULT_MAX_ITERATIONS,
     final_limit: int = 20,
     on_progress: Callable[[int, int], None] | None = None,
+    use_cache: bool = False,
 ) -> IdeaSearchResult:
     """Classify the idea's CPC segment, then iterate patent search terms from broad to narrow.
 
@@ -48,19 +49,19 @@ def search_competing_patents(
     report()
 
     terms = generate_search_terms(idea_summary)
-    count = count_patents(terms, cpc_prefix=cpc_segment.section)
+    count = count_patents(terms, cpc_prefix=cpc_segment.section, use_cache=use_cache)
     iterations = [SearchIteration(terms=terms, result_count=count)]
     step += 1
     report()
 
     while count > result_threshold and len(iterations) < max_iterations:
         terms = generate_search_terms(idea_summary, previous_terms=terms, previous_count=count)
-        count = count_patents(terms, cpc_prefix=cpc_segment.section)
+        count = count_patents(terms, cpc_prefix=cpc_segment.section, use_cache=use_cache)
         iterations.append(SearchIteration(terms=terms, result_count=count))
         step += 1
         report()
 
-    patents = search_patents(terms, limit=final_limit, cpc_prefix=cpc_segment.section)
+    patents = search_patents(terms, limit=final_limit, cpc_prefix=cpc_segment.section, use_cache=use_cache)
     step = total_steps
     report()
     return IdeaSearchResult(cpc_segment=cpc_segment, iterations=iterations, patents=patents)

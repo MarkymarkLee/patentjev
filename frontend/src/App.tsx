@@ -84,9 +84,9 @@ export default function App() {
   }
 
   return (
-    <main>
-      <h1>Patent Matcher</h1>
-      <p className="muted">Is your idea already patented? Find the closest patents in seconds.</p>
+    <main className={step.kind === 'results' ? 'app-main results-main' : 'app-main'}>
+      {step.kind !== 'results' && <header className="app-header"><div className="brand-mark"><span>✦</span> Patentjev</div><span className="header-label">Prior art discovery</span></header>}
+      {step.kind === 'input' && <div className="hero-copy"><p className="eyebrow">Patent intelligence, made simple</p><h1>Find the signal<br /><em>in prior art.</em></h1><p className="hero-subtitle">Turn an early-stage idea into a focused patent landscape in minutes.</p></div>}
       {error && <p className="error">{error}</p>}
 
       {step.kind === 'input' && (

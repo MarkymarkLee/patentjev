@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from patentjev.config import CORS_ORIGIN_REGEX, CORS_ORIGINS
 from patentjev.idea import Idea
 from patentjev.idea_search import IdeaSearchResult, search_competing_patents
 from patentjev.patent_comparison import PatentComparison, compare_patents
@@ -98,7 +99,8 @@ app = FastAPI(title="patentjev backend")
 # Dev convenience for running the frontend without the Vite proxy; tighten for production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=CORS_ORIGINS,
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
 )

@@ -15,6 +15,8 @@ Setup:
 1. Enable the BigQuery API on your GCP project and grant your account the `roles/bigquery.jobUser` role (or higher).
 2. Authenticate locally: `gcloud auth application-default login`.
 3. Set `GCP_PROJECT_ID`, `JEVAPIKEY` (TypeSafe API key), and `GMI_API_KEY` (GMI Cloud API key) in `.env`.
+4. For a forwarded frontend, set `CORS_ORIGINS` to a comma-separated list of exact origins, or set
+    `CORS_ORIGIN_REGEX` for a forwarded HTTPS domain pattern.
 
 Usage:
 
