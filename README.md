@@ -33,3 +33,18 @@ for patent in result.patents:
 Each BigQuery search scans a multi-terabyte public table; `search_patents`/`count_patents` cap
 billed bytes at 200 GB by default (`max_bytes_billed`). Use
 `bigquery_search.estimate_bytes_processed(terms)` to check cost before running ad hoc queries.
+
+## Backend API (for frontend/)
+
+`src/patentjev/api.py` implements the contract in [frontend/API.md](frontend/API.md)
+(`/api/understand`, `/api/search`, `/api/search/{job_id}`) on top of the pipeline above, plus a
+Jev-based comparison of each match against the idea.
+
+Run it:
+
+```bash
+uv run uvicorn patentjev.api:app --reload --port 8000
+```
+
+Then run the frontend (`cd frontend && npm run dev`) with `VITE_USE_MOCK=false` in
+`frontend/.env.local` to point it at this backend instead of the in-browser mock.
