@@ -7,8 +7,15 @@ import { IdeaInput } from './components/IdeaInput'
 import { Results } from './components/Results'
 import { SearchProgress } from './components/SearchProgress'
 
+// Top-level screen controller. The app is a linear wizard:
+//   input → clarify (0–2 rounds) → review → searching → results
+// Exactly one screen renders at a time, chosen by `step.kind`.
+
+// After this many clarify rounds we stop asking and go to review regardless.
 const MAX_CLARIFY_ROUNDS = 2
 
+// Each variant carries only the data its screen needs, so TypeScript
+// guarantees e.g. `step.result` exists whenever we render the results screen.
 type Step =
   | { kind: 'input' }
   | { kind: 'clarify'; questions: ClarifyQuestion[]; fields: IdeaFields }
@@ -18,12 +25,20 @@ type Step =
 
 export default function App() {
   const [step, setStep] = useState<Step>({ kind: 'input' })
+  // The original free-text idea; re-sent on every clarify round.
   const [idea, setIdea] = useState('')
+  // Every clarify answer so far, across rounds. The backend re-extracts
+  // fields from idea + all answers each time, so we always send the full list.
   const [answers, setAnswers] = useState<ClarifyAnswer[]>([])
+  // Current clarify round (1-based); 0 before the first understand call.
   const [round, setRound] = useState(0)
+  // True while an /understand request is in flight (disables buttons).
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Calls POST /api/understand, then decides where to go next:
+  // - backend returned questions and we still have rounds left → clarify screen
+  // - otherwise (fields are specific enough, or out of rounds) → review screen
   async function understand(text: string, allAnswers: ClarifyAnswer[], nextRound: number) {
     setBusy(true)
     setError(null)
@@ -42,6 +57,8 @@ export default function App() {
     }
   }
 
+  // Starts the patent scan and follows it to completion. runSearch handles the
+  // start-job + poll loop; we just update the progress bar on each poll.
   async function search(fields: IdeaFields) {
     setError(null)
     setStep({ kind: 'searching', scanned: 0, total: 0 })
@@ -51,11 +68,13 @@ export default function App() {
       )
       setStep({ kind: 'results', result })
     } catch (e) {
+      // On failure, drop back to review so the user can retry without retyping.
       setError(String(e))
       setStep({ kind: 'review', fields })
     }
   }
 
+  // Clears everything and returns to the idea input screen.
   function reset() {
     setIdea('')
     setAnswers([])
@@ -81,6 +100,7 @@ export default function App() {
       )}
       {step.kind === 'clarify' && (
         <ClarifyPanel
+          // key={round} remounts the panel each round so old answers don't linger in the inputs
           key={round}
           questions={step.questions}
           round={round}
@@ -91,6 +111,7 @@ export default function App() {
             setAnswers(all)
             understand(idea, all, round + 1)
           }}
+          // "Search anyway": use whatever fields we have, even if vague
           onSkip={() => setStep({ kind: 'review', fields: step.fields })}
         />
       )}

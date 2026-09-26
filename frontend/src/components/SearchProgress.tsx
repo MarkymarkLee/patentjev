@@ -1,3 +1,5 @@
+// Screen 4: progress bar driven by the scanned/total counts from polling
+// GET /api/search/{job_id}. total is 0 until the first poll returns.
 export function SearchProgress({ scanned, total }: { scanned: number; total: number }) {
   const pct = total ? Math.round((scanned / total) * 100) : 0
   return (

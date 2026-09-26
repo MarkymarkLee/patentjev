@@ -1,3 +1,5 @@
+// Screen 5: header, tiered result cards, and the not-legal-advice disclaimer.
+// Tiering and the top-3 fallback are decided by the backend; we only display.
 import type { PatentMatch, SearchResult, Tier } from '../api/types'
 
 const TIER_LABEL: Record<Tier, string> = {
@@ -6,6 +8,7 @@ const TIER_LABEL: Record<Tier, string> = {
   closest: 'Closest found',
 }
 
+// One row of the stage 2 breakdown: label, 0–1 bar, numeric value.
 function Bar({ label, value }: { label: string; value: number }) {
   return (
     <div className="bar">
@@ -18,6 +21,7 @@ function Bar({ label, value }: { label: string; value: number }) {
   )
 }
 
+// A single patent. The tier-* class sets the colored left border and badge color.
 function ResultCard({ m }: { m: PatentMatch }) {
   return (
     <article className={`card result tier-${m.tier}`}>
@@ -30,6 +34,7 @@ function ResultCard({ m }: { m: PatentMatch }) {
         {m.publication_number}
       </a>
       <p>{m.abstract}</p>
+      {/* Stage 2 breakdown is optional — backend sends null if it didn't compute it */}
       {m.breakdown && (
         <div className="breakdown">
           <Bar label="Same problem" value={m.breakdown.same_problem} />

@@ -1,3 +1,4 @@
+// Screen 1: free-text idea box. Submitting calls POST /api/understand (via App).
 import { useState } from 'react'
 
 export function IdeaInput({ onSubmit, busy }: { onSubmit: (idea: string) => void; busy: boolean }) {

@@ -1,3 +1,5 @@
+// Screen 3: lets the user check/edit the extracted fields before searching.
+// Nothing is sent until "Search patents" — edits here go into POST /api/search.
 import { useState } from 'react'
 import type { FieldName, IdeaFields } from '../api/types'
 
@@ -16,6 +18,7 @@ export function FieldsReview({
   onConfirm: (fields: IdeaFields) => void
   onBack: () => void
 }) {
+  // Local editable copy; the original fields prop is left untouched.
   const [edited, setEdited] = useState(fields)
   return (
     <div className="card">

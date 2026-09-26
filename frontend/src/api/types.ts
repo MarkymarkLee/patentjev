@@ -3,6 +3,7 @@
 
 export type FieldName = 'problem' | 'mechanism' | 'user'
 
+// The three structured fields the LLM extracts from a free-text idea.
 export interface IdeaFields {
   problem: string
   mechanism: string

@@ -1,4 +1,6 @@
 // In-browser fake backend so the UI can be built before the real one exists.
+// It mimics the real API's shapes and timing; none of the logic here (the
+// word-count scoring, hardcoded patents) reflects how the real backend works.
 import type { Api } from './client'
 import type { FieldName, PatentMatch, SearchStatus } from './types'
 
@@ -45,11 +47,15 @@ const MATCHES: PatentMatch[] = [
   },
 ]
 
+// Fake job store: we only remember when each job started, and derive progress
+// from elapsed time, so the progress bar fills over `durationMs`.
 const jobs = new Map<string, { started: number; durationMs: number }>()
 
 export const mockApi: Api = {
   async understand({ idea, answers }) {
     await sleep(600)
+    // Fake "specificity" score: longer ideas score higher; answered fields pass.
+    // Short ideas (< ~12 words) trigger clarify questions, so you can test that screen.
     const answered = new Set(answers.map((a) => a.field))
     const words = idea.trim().split(/\s+/).length
     const base = Math.min(0.9, 0.3 + words / 40)
